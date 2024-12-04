@@ -14,6 +14,17 @@ export const registerUser=asyncHandler(async(req:Request,res:Response,next:NextF
             throw new ApiError(400,"Failed validation!",ErrorCode.VALIDATION_FAILED)
       }
       const {email,fullName,phNumber}=validatedFields.data;
+      const existingUser = await prisma.user.findFirst({
+            where: {
+              OR: [
+                { email: email },
+                { phNumber: phNumber }
+              ]
+            }
+          });
+      if(existingUser){
+            throw new ApiError(409,"Email exist!",ErrorCode.EMAIL_EXIST)
+      }
       const user = await prisma.user.create({
             data:{
                   email,
