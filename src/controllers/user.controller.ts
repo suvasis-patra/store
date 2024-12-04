@@ -45,7 +45,7 @@ export const getUserById=asyncHandler(async(req:Request,res:Response)=>{
       }
       const user = await prisma.user.findUnique({where:{id:Number(userId)}});
       if(!user){
-            throw new ApiError(400,"User not found!",ErrorCode.USER_NOT_FOUND);
+            throw new ApiError(404,"User not found!",ErrorCode.USER_NOT_FOUND);
       }
       res.status(200).json(new ApiResponse(200,user,"success!"))
 })
