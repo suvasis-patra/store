@@ -63,3 +63,17 @@ export const placeOrder = asyncHandler(async (req: Request, res: Response) => {
     await prisma.$disconnect();
   }
 });
+
+export const getOrderById=asyncHandler(async(req:Request,res:Response)=>{
+      const {orderId}=req.params;
+      if(!orderId){
+            throw new ApiError(400,"Not Found!",ErrorCode.RESOURCE_NOT_FOUND);
+      }
+      const order=await prisma.order.findUnique({
+            where:{id:Number(orderId)}
+      })
+      if(!order){
+            throw new ApiError(400,"Not Found!",ErrorCode.ORDER_NOT_FOUND)
+      }
+      res.status(200).json(new ApiResponse(200,order,"success!"))
+})
