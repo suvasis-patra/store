@@ -37,3 +37,15 @@ export const registerUser=asyncHandler(async(req:Request,res:Response,next:NextF
       }
       res.status(201).json(new ApiResponse(201,{userId:user.id},"success!"))
 })
+
+export const getUserById=asyncHandler(async(req:Request,res:Response)=>{
+      const {userId}=req.params;
+      if(!userId){
+            throw new ApiError(401,"Unauthorized!",ErrorCode.UNAUTHORIZED_ACCESS);
+      }
+      const user = await prisma.user.findUnique({where:{id:Number(userId)}});
+      if(!user){
+            throw new ApiError(400,"User not found!",ErrorCode.USER_NOT_FOUND);
+      }
+      res.status(200).json(new ApiResponse(200,user,"success!"))
+})
