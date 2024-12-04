@@ -13,13 +13,14 @@ export const createProduct=asyncHandler(async(req:Request,res:Response)=>{
       if(!validatedFields.success){
             throw new ApiError(400,"Failed validation!",ErrorCode.VALIDATION_FAILED)
       }
-      const {name,price,description}=validatedFields.data;
+      const {name,price,description,stkQuantity}=validatedFields.data;
       const product = await prisma.product.create(
             {
                   data:{
                         name,
                         price,
-                        description
+                        description,
+                        stkQuantity
                   }
             }
       )

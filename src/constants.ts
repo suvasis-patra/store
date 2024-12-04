@@ -8,4 +8,5 @@ export enum ErrorCode {
       RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND",
       EMAIL_EXIST = "EAMIL_EXIST",
       PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND",
+      OUT_OF_STOCK="OUT_OF_STOCK"
     }

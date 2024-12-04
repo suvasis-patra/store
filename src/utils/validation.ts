@@ -17,12 +17,30 @@ export const UserRegistrationSchema=z.object({
 
 export const ProductCreationSchema=z.object({
        name:z
-           .string({ required_error: "This field is required!" })
-           .min(1, "This field is required!"),
+                .string({ required_error: "This field is required!" })
+                .min(1, "This field is required!"),
        price:z
-            .number({required_error:"This field is required!"})
-            .nonnegative("This need to be positive!"),
+                .number({required_error:"This field is required!"})
+                .nonnegative("This need to be positive!"),
        description:z
-            .string()
-            .optional() 
+                .string()
+                .optional(),
+       stkQuantity:z
+                 .number({required_error:"This field is required!"})
+                 .positive("Enter quantity correctly"),
+})
+
+export const OrderCreationSchema=z.object({
+       odrQuantity:z
+                  .number({required_error:"This field is required!"})
+                  .nonnegative("Please provide correct quantity!"),
+       productId:z
+                .number({required_error:"This field is required!"})
+                .nonnegative("Please provide correct quantity!"),
+       buyerId:z
+                .number({required_error:"This field is required!"})
+                .nonnegative("Please provide correct quantity!"),
+       orderValue:z
+                    .number({required_error:"This field is required!"})
+                    .positive("Please provide correct amount!")                 
 })
