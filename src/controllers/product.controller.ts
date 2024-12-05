@@ -33,7 +33,7 @@ export const createProduct=asyncHandler(async(req:Request,res:Response)=>{
 export const getProductById=asyncHandler(async(req:Request,res:Response)=>{
       const {productId}=req.params;
       if(!productId){
-            throw new ApiError(401,"Product not found!",ErrorCode.UNAUTHORIZED_ACCESS);
+            throw new ApiError(401,"Product not found!",ErrorCode.PRODUCT_NOT_FOUND);
       }
       const product = await prisma.product.findUnique({where:{id:Number(productId)}});
       if(!product){
@@ -41,3 +41,13 @@ export const getProductById=asyncHandler(async(req:Request,res:Response)=>{
       }
       res.status(200).json(new ApiResponse(200,product,"success!"))
 })
+
+export const getTotalProductQuantity=asyncHandler(async(_:Request,res:Response)=>{
+      const totalProductQuantity=await prisma.product.aggregate({
+            _sum:{
+                  stkQuantity:true
+            }
+      })
+      res.status(200).json(new ApiResponse(200,{totalProductsQuantity:totalProductQuantity._sum.stkQuantity||0},"success!"))
+})
+

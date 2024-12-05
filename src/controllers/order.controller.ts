@@ -77,3 +77,29 @@ export const getOrderById=asyncHandler(async(req:Request,res:Response)=>{
       }
       res.status(200).json(new ApiResponse(200,order,"success!"))
 })
+
+export const getRecentOrders=asyncHandler(async(req:Request,res:Response)=>{
+      const now = new Date()
+      const aWeek=new Date()
+      aWeek.setDate(now.getDate()-7);
+      const orders=await prisma.order.findMany({
+            where:{
+                  createdAt:{
+                        gte:aWeek,
+                  }
+            },
+            include:{
+                  buyer:true,
+                  product:true
+            },
+            orderBy:{
+                  createdAt:"desc"
+            }
+      })
+      if(orders.length<=0){
+            throw new ApiError(400,"Failed to ge Orders!",ErrorCode.ORDER_NOT_FOUND)
+      }
+      res.status(200).json(new ApiResponse(200,orders,"success!"))
+})
+
+
