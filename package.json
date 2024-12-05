@@ -1,7 +1,7 @@
 {
   "name": "store-api",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "start": "tsc -b && node dist/index.js",
     "build":"tsc -b",
