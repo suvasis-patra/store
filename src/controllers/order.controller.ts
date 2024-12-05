@@ -78,7 +78,7 @@ export const getOrderById=asyncHandler(async(req:Request,res:Response)=>{
       res.status(200).json(new ApiResponse(200,order,"success!"))
 })
 
-export const getRecentOrders=asyncHandler(async(req:Request,res:Response)=>{
+export const getRecentOrders=asyncHandler(async(_:Request,res:Response)=>{
       const now = new Date()
       const aWeek=new Date()
       aWeek.setDate(now.getDate()-7);
@@ -100,6 +100,45 @@ export const getRecentOrders=asyncHandler(async(req:Request,res:Response)=>{
             throw new ApiError(400,"Failed to ge Orders!",ErrorCode.ORDER_NOT_FOUND)
       }
       res.status(200).json(new ApiResponse(200,orders,"success!"))
+})
+
+
+export const updateOrder=asyncHandler(async(req:Request,res:Response)=>{
+  const {orderId}=req.params;
+  if(!orderId){
+    throw new ApiError(400,"Order not found!",ErrorCode.ORDER_NOT_FOUND);
+  }
+  const validatedFields = OrderCreationSchema.partial().safeParse(req.body);
+  if(!validatedFields.success){
+    throw new ApiError(400,"Validation Error!",ErrorCode.VALIDATION_FAILED);
+  }
+  const {buyerId,odrQuantity,orderValue,productId}=validatedFields.data;
+  const checkBuyer = await prisma.user.findUnique({ where: { id: buyerId } });
+      if (!checkBuyer) {
+        throw new ApiError(400, "Buyer not found!", ErrorCode.USER_NOT_FOUND);
+      }
+
+      const checkProduct = await prisma.product.findUnique({ where: { id: productId } });
+      if (!checkProduct) {
+        throw new ApiError(400, "Product not found!", ErrorCode.PRODUCT_NOT_FOUND);
+      }
+
+      if (odrQuantity && checkProduct.stkQuantity < odrQuantity) {
+        throw new ApiError(400, "Insufficient stock!", ErrorCode.RESOURCE_NOT_FOUND);
+      }
+  const updatedOrder = await prisma.order.update({
+    where:{id:parseInt(orderId)},
+    data:{
+      ...(odrQuantity && {odrQuantity}),
+      ...(orderValue && {orderValue}),
+      ...(productId && {productId}),
+      ...(buyerId && {buyerId})
+    }
+  })
+  if(!updatedOrder){
+    throw new ApiError(500,"Failed to update order!",ErrorCode.DATABASE_ERROR)
+  }
+  res.status(200).json(new ApiResponse(200,{orderId:updatedOrder.id},"success!"))
 })
 
 

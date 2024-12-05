@@ -51,3 +51,28 @@ export const getTotalProductQuantity=asyncHandler(async(_:Request,res:Response)=
       res.status(200).json(new ApiResponse(200,{totalProductsQuantity:totalProductQuantity._sum.stkQuantity||0},"success!"))
 })
 
+
+export const updateProduct=asyncHandler(async(req:Request,res:Response)=>{
+      const {productId}=req.params;
+      if(!productId){
+            throw new ApiError(400,"Product not found!",ErrorCode.PRODUCT_NOT_FOUND);
+      }
+      const validatedFields = ProductCreationSchema.partial().safeParse(req.body);
+      if(!validatedFields.success){
+            throw new ApiError(400,"Validation Error!",ErrorCode.VALIDATION_FAILED);
+      }
+      const { name, price, description, stkQuantity } = validatedFields.data;
+      const updatedProduct = await prisma.product.update({
+            where:{id:parseInt(productId)},
+            data:{
+                  ...(name && {name}),
+                  ...(description && {description}),
+                  ...(stkQuantity && {stkQuantity}),
+                  ...(price && {price}),
+            }
+      })
+      if(!updatedProduct){
+            throw new ApiError(500,"Failed to update product",ErrorCode.DATABASE_ERROR)
+      }
+      res.status(200).json(new ApiResponse(200,{productId:updatedProduct.id},"success!"))
+})

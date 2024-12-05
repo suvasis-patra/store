@@ -92,3 +92,23 @@ export const updateUser=asyncHandler(async(req:Request,res:Response)=>{
       }
       res.status(200).json(new ApiResponse(200,{userId:user.id},"success!"))
 })
+
+export const getUserByProduct=asyncHandler(async(req:Request,res:Response)=>{
+      const {productId}=req.params;
+      if(!productId){
+            throw new ApiError(400,"Product not found!",ErrorCode.PRODUCT_NOT_FOUND)
+      }
+      const id =parseInt(productId)
+      const users = await prisma.user.findMany({
+            where:{
+                  orders:{
+                        some:{id},
+                  }
+            }
+      })
+
+      if(!users){
+            throw new ApiError(400,"Failed to find users!",ErrorCode.USER_NOT_FOUND)
+      }
+      res.status(200).json(new ApiResponse(200,users,"success"))
+})

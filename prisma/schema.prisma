@@ -39,4 +39,8 @@ model Order{
   product Product @relation(fields: [productId],references: [id])
   buyerId Int
   buyer User @relation(fields: [buyerId],references: [id])
+
+  @@index([productId, buyerId])
+  @@index([buyerId])
+  @@index([productId])
 }
